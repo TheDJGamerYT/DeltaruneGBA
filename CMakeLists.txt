@@ -20,6 +20,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(DeltaruneGBA
         src/main.cpp
+        src/arenas.cpp
+        include/save_manager.h
+        include/room.h
 )
 
 set_target_properties(DeltaruneGBA PROPERTIES
@@ -27,7 +30,7 @@ set_target_properties(DeltaruneGBA PROPERTIES
 )
 
 target_include_directories(DeltaruneGBA PRIVATE
-        "${DEVKITPRO}/libgba/include"
+        "${DEVKITPRO}/libgba/include" "include"
 )
 
 target_compile_options(DeltaruneGBA PRIVATE
