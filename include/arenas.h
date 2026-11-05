@@ -13,6 +13,26 @@ namespace game {
     struct Frequented {
         uint16_t playerHealth;
         uint16_t playerTP;
+        uint16_t playerVelocity;
+        uint16_t tick;
+
+        [[nodiscard]] int8_t getVelocityX() const {
+            return static_cast<int8_t>(playerVelocity >> 8);
+        }
+
+        [[nodiscard]] int8_t getVelocityY() const {
+            return static_cast<int8_t>(playerVelocity & 0xFF);
+        }
+
+        void setVelocityX(int8_t x) {
+            playerVelocity = (playerVelocity & 0x00FF) |
+                (static_cast<uint16_t>(static_cast<uint8_t>(x)) << 8);
+        }
+
+        void setVelocityY(int8_t y) {
+            playerVelocity = (playerVelocity & 0xFF00) |
+                static_cast<uint8_t>(y);
+        }
     };
 
     /**
@@ -66,8 +86,8 @@ namespace game {
     extern IwramArena iwramArena;
     extern uint8_t ewramArena[32768];
 
-    static_assert(sizeof(Frequented) == 4);
     static_assert(sizeof(Entity) == 8);
+    static_assert(sizeof(Frequented) == 8);
     static_assert(sizeof(Entities) == 260);
     static_assert(sizeof(Stack) == 512);
     static_assert(sizeof(RoomInfo) == 600);
