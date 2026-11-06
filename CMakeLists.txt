@@ -23,6 +23,8 @@ add_executable(DeltaruneGBA
         src/arenas.cpp
         include/save_manager.h
         include/room.h
+        include/sprites.h
+        include/palette.h
 )
 
 set_target_properties(DeltaruneGBA PROPERTIES

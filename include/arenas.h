@@ -5,6 +5,7 @@
 
 #include <cstdint>
 
+#include "palette.h"
 #include "room.h"
 #include "types.h"
 
@@ -71,8 +72,8 @@ namespace game {
         EntityPosition playerPosition;
     };
 
+    // Small, hot state: stays in fast 32 KB IWRAM.
     struct GameArena {
-        RoomInfo currentRoom{};
         Stack gameStack{};
         Frequented frequented{};
         Entities entities{};
@@ -83,17 +84,33 @@ namespace game {
         uint8_t remaining[8192 - sizeof(GameArena)]{};
     };
 
+    // Big state: lives in 256 KB EWRAM.
+    struct EwramArena {
+        // Software back buffer (Mode 4, 8bpp). Everything is drawn here with
+        // plain byte writes, then block-copied to the hidden VRAM page.
+        alignas(4) uint8_t backBuffer[240 * 160];
+
+        // The currently loaded room.
+        RoomInfo room{};
+
+        // Merged palette + per-sprite index remap tables for that room.
+        RoomPalette palette{};
+    };
+
     extern IwramArena iwramArena;
-    extern uint8_t ewramArena[32768];
+    extern EwramArena ewramArena;
 
     static_assert(sizeof(Entity) == 8);
     static_assert(sizeof(Frequented) == 8);
     static_assert(sizeof(Entities) == 260);
     static_assert(sizeof(Stack) == 512);
-    static_assert(sizeof(RoomInfo) == 600);
     static_assert(sizeof(IwramArena) == 8192);
+    static_assert(sizeof(EwramArena) <= 256 * 1024, "EWRAM arena does not fit in 256 KB");
 }
 
 #define GAME_STATE (game::iwramArena.game)
+#define CURRENT_ROOM (game::ewramArena.room)
+#define BACK_BUFFER (game::ewramArena.backBuffer)
+#define ROOM_PALETTE (game::ewramArena.palette)
 
 #endif
